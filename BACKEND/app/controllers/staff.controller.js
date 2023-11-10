@@ -1,35 +1,35 @@
 exports.create = (req, res) => {
     res.send({
-        message: "[customer] create handler"
+        message: "[staff] create handler"
     });
 };
 
 exports.findAll = (req, res) => {
     res.send({
-        message: "[customer] findAll handler"
+        message: "[staff] findAll handler"
     });
 };
 
 exports.findOne = (req, res) => {
     res.send({
-        message: "[customer] findOne handler"
+        message: "[staff] findOne handler"
     });
 };
 
 exports.update = (req, res) => {
     res.send({
-        message: "[customer] update handler"
+        message: "[staff] update handler"
     });
 };
 
 exports.delete = (req, res) => {
     res.send({
-        message: "[customer] delete handler"
+        message: "[staff] delete handler"
     });
 };
 
 exports.deleteAll = (req, res) => {
     res.send({
-        message: "[customer] deleteAll handler"
+        message: "[staff] deleteAll handler"
     });
 };
