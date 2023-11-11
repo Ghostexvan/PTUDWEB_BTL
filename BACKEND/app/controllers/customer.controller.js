@@ -117,10 +117,27 @@ exports.update = async (req, res, next) => {
     }
 }
 
-exports.delete = (req, res) => {
-    res.send({
-        message: "[customer] delete handler"
-    });
+
+//Xoa thong tin khach hang voi id xac dinh
+exports.delete = async (req, res, next) => {
+    try {
+        const customerService = new CustomerService(MongoDB.client);
+        const document = await customerService.delete(req.params.id);
+
+        if (!document){
+            return next(
+                new ApiError(404, "Customer not found!")
+            );
+        }
+
+        return res.send({
+            message: "Customer was deleted successfully"
+        });
+    } catch (error) {
+        return next(
+            new ApiError(500, `Could not delete customer with id=${req.params.id}`)
+        );
+    }
 };
 
 // Xoa toan bo thong tin khach hang hien co

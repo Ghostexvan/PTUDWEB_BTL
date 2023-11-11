@@ -101,6 +101,14 @@ class CustomerService {
         return result;
     }
 
+    async delete(id) {
+        const result = await this.Customer.findOneAndDelete({
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
+        });
+
+        return result;
+    }
+
     // Xoa toan bo khach hang trong csdl
     async deleteAll() {
         const result = await this.Customer.deleteMany({});
