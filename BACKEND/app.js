@@ -18,8 +18,8 @@ app.use((req, res, next) => {
 
 // Xu ly loi tap chung bang middleware
 app.use((err, req, res, next) => {
-    return res.status(error.statusCode || 500).json({
-        message: error.message || "Internal Server Error",
+    return res.status(err.statusCode || 500).json({
+        message: err.message || "Internal Server Error",
     });
 });
 
