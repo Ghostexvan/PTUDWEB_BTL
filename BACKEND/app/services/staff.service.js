@@ -1,27 +1,28 @@
 const { ObjectId } = require("mongodb");
 const bcrypt = require('bcrypt');
 
-class CustomerService {
+class StaffService {
     constructor(client) {
-        this.Customer = client.db().collection("customers");
+        this.Staff = client.db().collection("staffs");
     }
 
     // Cac phuong thuc truy xuat du lieu su dung MongoDB API
-    // Trich xuat thong tin khach hang
-    extractCustomerData(payload) {
-        const customer = {
+    // Trich xuat thong tin nhan vien
+    extractStaffData(payload) {
+        const staff = {
             name: payload.name,
             password: payload.password,
+            position: payload.position,
             address: payload.address,
             phone: payload.phone,
         };
 
         // Loai bo nhung truong trong
-        Object.keys(customer).forEach(
-            (key) => customer[key] === undefined && delete customer[key]
+        Object.keys(staff).forEach(
+            (key) => staff[key] === undefined && delete staff[key]
         );
 
-        return customer;
+        return staff;
     }
 
     // Hash mat khau
@@ -30,14 +31,18 @@ class CustomerService {
         return hash;
     }
 
-    // Tao va luu thong tin khach hang vao csdl
+    // Tao va luu thong tin nhan vien vao csdl
     async create(payload){
-        const customer = this.extractCustomerData(payload);
-        const result = await this.Customer.findOneAndUpdate(
-            customer,
+        const staff = this.extractStaffData(payload);
+        
+        if (staff.position == undefined)
+            staff.position = "staff";
+        
+        const result = await this.Staff.findOneAndUpdate(
+            staff,
             {
                 $set: {
-                    password: await this.hashPassword(customer.password)
+                    password: await this.hashPassword(staff.password)
                 }
             },
             {
@@ -49,13 +54,13 @@ class CustomerService {
         return result;
     }
 
-    // Tim kiem thong tin khach hang dua theo dieu kien loc
+    // Tim kiem thong tin nhan vien dua theo dieu kien loc
     async find(filter) {
-        const cursor = await this.Customer.find(filter);
+        const cursor = await this.Staff.find(filter);
         return await cursor.toArray();
     }
 
-    // Tim kiem thong tin khach hang theo ten
+    // Tim kiem thong tin nhan vien theo ten
     async findByName(name) {
         return await this.find({
             name: {
@@ -65,38 +70,38 @@ class CustomerService {
         });
     }
 
-    // Tim kiem thong tin khach hang dua tren id
+    // Tim kiem thong tin nhan vien dua tren id
     async findById(id) {
-        return await this.Customer.findOne({
+        return await this.Staff.findOne({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         });
     }
 
-    // Tim kiem thong tin khach hang dua tren so dien thoai
+    // Tim kiem thong tin nhan vien dua tren so dien thoai
     async findByPhone(phone){
         return await this.find({
             "phone": phone
         });
     }
 
-    // Kiem tra mat khau khach hang
+    // Kiem tra mat khau nhan vien
     async comparePassword(plaintextPassword, hash) {
         const result = await bcrypt.compare(plaintextPassword, hash);
         return result;
     }
 
-    // Cap nhat thong tin khach hang dua tren id
+    // Cap nhat thong tin nhan vien dua tren id
     async update(id, payload) {
         const filter = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         };
 
-        const update = this.extractCustomerData(payload);
+        const update = this.extractStaffData(payload);
 
         if (update.password != undefined)
             update.password = await this.hashPassword(update.password);
 
-        const result = await this.Customer.findOneAndUpdate(
+        const result = await this.Staff.findOneAndUpdate(
             filter,
             {
                 $set: update
@@ -108,20 +113,20 @@ class CustomerService {
         return result;
     }
 
-    // Xoa thong tin khach hang dua tren id
+    // Xoa thong tin nhan vien dua tren id
     async delete(id) {
-        const result = await this.Customer.findOneAndDelete({
+        const result = await this.Staff.findOneAndDelete({
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
         });
 
         return result;
     }
 
-    // Xoa toan bo khach hang trong csdl
+    // Xoa toan bo nhan vien trong csdl
     async deleteAll() {
-        const result = await this.Customer.deleteMany({});
+        const result = await this.Staff.deleteMany({});
         return result.deletedCount;
     }
 }
 
-module.exports = CustomerService;
+module.exports = StaffService;

@@ -37,6 +37,7 @@ exports.findAll = async(req, res, next) => {
     try {
         const customerService = new CustomerService(MongoDB.client);
         const { name } = req.query;
+
         if (name) {
             documents = await customerService.findByName(name);
         } else {
@@ -117,7 +118,6 @@ exports.update = async (req, res, next) => {
     }
 }
 
-
 //Xoa thong tin khach hang voi id xac dinh
 exports.delete = async (req, res, next) => {
     try {
@@ -155,3 +155,40 @@ exports.deleteAll = async(req, res, next) => {
         );
     }
 };
+
+exports.validateLogin = async(req, res, next) => {
+    if (!req.body?.phone || !req.body?.password){
+        return next(
+            new ApiError(400, "Phone and password cannot be empty!")
+        );
+    }
+
+    try {
+        const customerService = new CustomerService(MongoDB.client);
+        let document = await customerService.find({
+            phone: req.body.phone
+        });
+
+        if (!document[0]){
+            return next(
+                new ApiError(404, "Customer with this phone not found!")
+            );
+        }
+
+        const result = await customerService.comparePassword(req.body.password, document[0].password);
+
+        if (!result){
+            return next(
+                new ApiError(401, "Phone or password is wrong!")
+            );
+        }
+
+        return res.send({
+            message: `Customer with id=${document[0]._id} is validated!`
+        });
+    } catch (error) {
+        return next(
+            new ApiError(400, "An error occurred while validating customer!")
+        );
+    }
+}

@@ -13,4 +13,7 @@ router.route("/:id")
     .put(staffs.update)
     .delete(staffs.delete)
 
+router.route("/login")
+    .post(staffs.validateLogin)
+
 module.exports = router;
