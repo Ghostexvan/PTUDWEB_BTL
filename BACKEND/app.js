@@ -5,11 +5,13 @@ const ApiError = require("./app/api-error");
 const app = express();
 const customesRouter = require("./app/routes/customer.route");
 const staffsRouter = require("./app/routes/staff.route");
+const imagesRouter = require("./app/routes/image.route");
 
 app.use(cors());
 app.use(express.json());
 app.use("/api/customers", customesRouter);
 app.use("/api/staffs", staffsRouter);
+app.use("/api/images", imagesRouter);
 
 // Xu ly loi 404
 app.use((req, res, next) => {
